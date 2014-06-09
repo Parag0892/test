@@ -32,6 +32,8 @@ import android.view.inputmethod.InputMethodSubtype;
  * Author: MAYANK NEVE 
  * Extending the keyborad view
  */
+
+// veiw that renders the virtual keyboard . it handels the rendering of the keys and key presses and touch movements 
 public class LatinKeyboardView extends KeyboardView {
 
     static final int KEYCODE_OPTIONS = -100;
@@ -43,20 +45,28 @@ public class LatinKeyboardView extends KeyboardView {
     public LatinKeyboardView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
+    
+    // if keyboard.keycode_cancel then the if parts which is  
 
     @Override
     protected boolean onLongPress(Key key) {
         if (key.codes[0] == Keyboard.KEYCODE_CANCEL) {
+        	
+        	// sends a key press to the listener 
             getOnKeyboardActionListener().onKey(KEYCODE_OPTIONS, null);
             return true;
         } else {
             return super.onLongPress(key);
         }
     }
+    
+    // input method subtype is used for storing the meta related with the IME . EX: language , voice-text , used in switch and settings
+    // brings the subtype input method directly 
 
     void setSubtypeOnSpaceKey(final InputMethodSubtype subtype) {
-        final LatinKeyboard keyboard = (LatinKeyboard)getKeyboard();
+        final LatinKeyboard keyboard = (LatinKeyboard)getKeyboard();// get the current displayed keybooard
         keyboard.setSpaceIcon(getResources().getDrawable(subtype.getIconResId()));
-        invalidateAllKeys();
+        
+        invalidateAllKeys(); // request to redraw the entire keyboard
     }
 }
