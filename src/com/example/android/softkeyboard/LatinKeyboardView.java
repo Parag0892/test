@@ -46,13 +46,13 @@ public class LatinKeyboardView extends KeyboardView {
         super(context, attrs, defStyle);
     }
     
-    // if keyboard.keycode_cancel then the if parts which is  
+    // if keyboard.keycode_cancel then the if parts which is  sending some information in the softkeyboard 
 
     @Override
     protected boolean onLongPress(Key key) {
         if (key.codes[0] == Keyboard.KEYCODE_CANCEL) {
         	
-        	// sends a key press to the listener 
+        	// first get the object of the onkeyboardlistener -- sends a key press to the listener -- matlab ye softkeyboard wale me chala jaega 
             getOnKeyboardActionListener().onKey(KEYCODE_OPTIONS, null);
             return true;
         } else {

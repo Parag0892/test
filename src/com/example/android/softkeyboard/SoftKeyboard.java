@@ -19,6 +19,7 @@ package com.example.android.softkeyboard;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
+import android.media.MediaPlayer;
 import android.text.InputType;
 import android.text.method.MetaKeyKeyListener;
 import android.view.KeyCharacterMap;
@@ -62,6 +63,9 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
     private CandidateView mCandidateView;
     private CompletionInfo[] mCompletions;
     
+    
+    private boolean music = false ; 
+    
     private StringBuilder mComposing = new StringBuilder();
     private boolean mPredictionOn;
     private boolean mCompletionOn;
@@ -86,6 +90,7 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
     public void onCreate() 
     {
         super.onCreate();
+        
         mInputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
         mWordSeparators = getResources().getString(R.string.word_separators);
     }
@@ -355,13 +360,22 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
      */
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
+        
+        
+           
+        
+        
+            
             case KeyEvent.KEYCODE_BACK:
+            	
                 // The InputMethodService already takes care of the back
                 // key for us, to dismiss the input method if it is shown.
                 // However, our keyboard could be showing a pop-up window
                 // that back should dismiss, so we first allow it to do that.
+            	
                 if (event.getRepeatCount() == 0 && mInputView != null) {
                     if (mInputView.handleBack()) {
+                    	
                         return true;
                     }
                 }
@@ -371,11 +385,20 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
                 // Special handling of the delete key: if we currently are
                 // composing text for the user, we want to modify that instead
                 // of let the application to the delete itself.
+            	System.out.println("check"+"done work ") ; 
                 if (mComposing.length() > 0) {
                     onKey(Keyboard.KEYCODE_DELETE, null);
+                    System.out.println("check"+"done work ") ; 
                     return true;
                 }
                 break;
+                
+                
+            case KeyEvent.KEYCODE_0:
+                // Let the underlying text editor always handle these.
+            	System.out.println("Check"+"0") ; 
+                return false;
+                
                 
             case KeyEvent.KEYCODE_ENTER:
                 // Let the underlying text editor always handle these.
@@ -385,6 +408,9 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
                 // For all other keys, if we want to do transformations on
                 // text being entered with a hard keyboard, we need to process
                 // it and do the appropriate action.
+            	
+            	System.out.println("check"+"frererg") ; 
+            	
                 if (PROCESS_HARD_KEYS) {
                     if (keyCode == KeyEvent.KEYCODE_SPACE
                             && (event.getMetaState()&KeyEvent.META_ALT_ON) != 0) {
@@ -694,9 +720,18 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
     public void swipeUp() {
     }
     
+    
+    
     public void onPress(int primaryCode) {
+    	
+          
+    	 MediaPlayer song = MediaPlayer.create(this , R.raw.o ) ; 
+    	 song.start () ; 
+    	 System.out.println("check"+"count"); 
     }
     
     public void onRelease(int primaryCode) {
     }
+    
+    
 }

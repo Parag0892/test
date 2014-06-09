@@ -28,14 +28,14 @@ import android.view.inputmethod.EditorInfo;
 /**
  * Date: 4/6/7 
  * Author: MAYANK NEVE 
- * Extending the keyboard which would provide the functionality to
- *  get the key clicked by the user
+ * Extending the keyboard which loads the xml descriptor of the keyboards and stores the keys 
  */
 public class LatinKeyboard extends Keyboard {
 
     private Key mEnterKey;
     private Key mSpaceKey;
     
+    //context is the application context and the xmllayoutResId is the xml key layout file 
     public LatinKeyboard(Context context, int xmlLayoutResId) {
         super(context, xmlLayoutResId);
     }
@@ -45,6 +45,9 @@ public class LatinKeyboard extends Keyboard {
         super(context, layoutTemplateResId, characters, columns, horizontalPadding);
     }
 
+    
+    
+    // CREATING THE  key of type latin (customized) sending it to the required one 
     @Override
     protected Key createKeyFromXml(Resources res, Row parent, int x, int y, 
             XmlResourceParser parser) {
@@ -109,6 +112,8 @@ public class LatinKeyboard extends Keyboard {
          * Overriding this method so that we can reduce the target area for the key that
          * closes the keyboard. 
          */
+        
+        //detects if the point falls inside the key 
         @Override
         public boolean isInside(int x, int y) {
             return super.isInside(x, codes[0] == KEYCODE_CANCEL ? y - 10 : y);
