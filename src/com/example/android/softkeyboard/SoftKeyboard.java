@@ -20,6 +20,7 @@ import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.text.InputType;
 import android.text.method.MetaKeyKeyListener;
 import android.view.KeyCharacterMap;
@@ -81,6 +82,7 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
     private LatinKeyboard mCurKeyboard;
     
     private String mWordSeparators;
+    private MediaPlayer song ; 
     
     /**
      * Main initialization of the input method component.  Be sure to call
@@ -90,7 +92,7 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
     public void onCreate() 
     {
         super.onCreate();
-        
+        song =  MediaPlayer.create(this ,  R.raw.o );  ;
         mInputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
         mWordSeparators = getResources().getString(R.string.word_separators);
     }
@@ -721,17 +723,29 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
     }
     
     
-    
+   //  
     public void onPress(int primaryCode) {
     	
+         System.out.println(primaryCode) ; 
+    	 if (song.isPlaying())
+         {
+    		 song.pause();  
+    		 song.start() ; 
+         }
+    	 else 
+    	 {
+    		 song.start() ; 
+         }
+         
           
-    	 MediaPlayer song = MediaPlayer.create(this , R.raw.o ) ; 
-    	 song.start () ; 
     	 System.out.println("check"+"count"); 
     }
     
     public void onRelease(int primaryCode) {
     }
+    
+ 
+   
     
     
 }
