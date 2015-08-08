@@ -18,12 +18,13 @@
 */
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- Title for Latin keyboard  -->
+
+    <!-- Title for Latin keyboard -->
     <string name="ime_name">IKEY Demo</string>
 
     <!-- Symbols that are commonly considered word separators in this language -->
     <string name="word_separators">\u0020.,;:!?\n()[]*&amp;@{}/&lt;&gt;_+=|&quot;</string>
-    
+
     <!-- Labels on soft keys -->
     <string name="label_go_key">Go</string>
     <string name="label_next_key">Next</string>
@@ -34,8 +35,12 @@
     <string name="label_subtype_en_GB">English</string>
 
     <!-- Titles for ImePreference -->
-    <string name="settings_name">IKEY Demo</string>
+    <string name="settings_name">IKEY Settings</string>
     <string name="language_selection_title">Input languages</string>
     <string name="select_language">Select input languages</string>
     <string name="general_category">General</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+
 </resources>

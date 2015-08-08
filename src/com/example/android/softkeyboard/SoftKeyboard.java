@@ -16,13 +16,22 @@
 
 package com.example.android.softkeyboard;
 
+import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnPreparedListener;
+import android.media.SoundPool;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.text.InputType;
 import android.text.method.MetaKeyKeyListener;
+import android.util.Log;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
@@ -31,10 +40,12 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
+import android.widget.Toast;
 
+import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-
 /**
  * Date: 4/6/7 
  * Author: MAYANK NEVE 
@@ -44,9 +55,10 @@ import java.util.List;
  * a basic example for how you would get started writing an input method, to
  * be fleshed out as appropriate.
  */
-public class SoftKeyboard extends InputMethodService  implements KeyboardView.OnKeyboardActionListener
+public class SoftKeyboard extends InputMethodService  implements KeyboardView.OnKeyboardActionListener , Runnable  , OnPreparedListener
 {
-    static final boolean DEBUG = false;
+     static final boolean DEBUG = false;
+	
     
     /**
      * This boolean indicates the optional example code for performing
@@ -57,6 +69,11 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
      * that are primarily intended to be used for on-screen text entry.
      */
     static final boolean PROCESS_HARD_KEYS = true;
+    
+    static boolean check_long  = false;
+	
+    static final long long_time = 200 ; 
+     long system_time = 0 ; 
 
     private InputMethodManager mInputMethodManager;
 
@@ -66,6 +83,7 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
     
     
     private boolean music = false ; 
+    private boolean start = true ; 
     
     private StringBuilder mComposing = new StringBuilder();
     private boolean mPredictionOn;
@@ -82,19 +100,105 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
     private LatinKeyboard mCurKeyboard;
     
     private String mWordSeparators;
-    private MediaPlayer song ; 
+   
+    private MediaPlayer mediaPlayer  ;
+    
+    /*
+    private MediaPlayer song_2 ;
+    private MediaPlayer song_3 ;
+    private MediaPlayer song_4 ;
+    private MediaPlayer song_5 ;
+    private MediaPlayer song_6 ;
+    private MediaPlayer song_7 ;
+    private MediaPlayer song_8 ;
+    private int count   ; 
+    */
+    ArrayList <Integer> song_list = null   ; 
+    ArrayList <File> list_local = null ; 
+    
+    long time    ; 
+    
     
     /**
-     * Main initialization of the input method component.  Be sure to call
+     * Main initialization of the input metod component.  Be sure to call
      * to super class.
      */
     @Override
     public void onCreate() 
     {
         super.onCreate();
-        song =  MediaPlayer.create(this ,  R.raw.o );  ;
+        
+        
+        
+        //song_1 =  MediaPlayer.create(this ,  R.raw.one ); 
+        
+        list_local = new ArrayList () ; 
+        
+        final String MEDIA_PATH = Environment.getExternalStorageDirectory()
+                .getPath() + "/IKEY/";
+        
+        
+        
+        if (MEDIA_PATH != null) {
+	        File home = new File(MEDIA_PATH);
+	        File[] listFiles = home.listFiles();
+	        if (listFiles != null && listFiles.length > 0) {
+	            for (File file : listFiles) {
+	               // System.out.println(file.getAbsolutePath());
+	               
+	                if (file.getName().endsWith(".mp3"))
+	                {
+	                	list_local.add(file) ; 
+	                	System.out.println(file.getName()); 
+	                	System.out.println(file.getAbsolutePath()); 
+	                	
+	                }
+	                
+	            }
+	        }
+	    }
+        
+        
+        if (list_local.size() > 0)
+        {
+        	mediaPlayer  =  MediaPlayer.create(SoftKeyboard.this, Uri.parse(list_local.get(0).getAbsolutePath()));
+        }
+        else 
+        	{
+        	mediaPlayer  =  MediaPlayer.create(this ,  R.raw.a_1 );
+        	}
+        
+        mediaPlayer .setLooping(false) ; 
+    	   
+        song_list = music_setup () ;  
+        
+         listen(mediaPlayer); 
+         
+      /*  
+      song_3 =  MediaPlayer.create(this ,  R.raw.three ); 
+        song_2.setNextMediaPlayer(song_3) ; 
+        song_4 =  MediaPlayer.create(this ,  R.raw.four ); 
+        song_5 =  MediaPlayer.create(this ,  R.raw.five); 
+        song_6 =  MediaPlayer.create(this ,  R.raw.six ); 
+        song_7 =  MediaPlayer.create(this ,  R.raw.seven  ); 
+        song_8 =  MediaPlayer.create(this ,  R.raw.eight ); 
+        count = 0 ; 
+        
+        
+        song_list = new ArrayList () ; 
+        
+        song_list.add(song_1) ; 
+        song_list.add(song_2) ; 
+        song_list.add(song_3) ; 
+        song_list.add(song_4) ; 
+        song_list.add(song_5) ; 
+        song_list.add(song_6) ; 
+        song_list.add(song_7) ;
+        song_list.add(song_8) ; 
+        */
         mInputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
         mWordSeparators = getResources().getString(R.string.word_separators);
+        System.out.println("check"+"starting first time") ; 
     }
     
     /**
@@ -112,6 +216,7 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
             if (displayWidth == mLastDisplayWidth) return;
             mLastDisplayWidth = displayWidth;
         }
+        System.out.println("check"+"starting first time on itialize") ; 
         mQwertyKeyboard = new LatinKeyboard(this, R.xml.qwerty);
         mSymbolsKeyboard = new LatinKeyboard(this, R.xml.symbols);
         mSymbolsShiftedKeyboard = new LatinKeyboard(this, R.xml.symbols_shift);
@@ -128,6 +233,10 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
                 R.layout.input, null);
         mInputView.setOnKeyboardActionListener(this);
         mInputView.setKeyboard(mQwertyKeyboard);
+        
+        
+        System.out.println("check"+"starting first time on createInputView") ; 
+        
         return mInputView;
     }
 
@@ -138,6 +247,9 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
     @Override public View onCreateCandidatesView() {
         mCandidateView = new CandidateView(this);
         mCandidateView.setService(this);
+        
+
+        System.out.println("check"+"starting first time on createCandidateView ") ;
         return mCandidateView;
     }
 
@@ -152,6 +264,11 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
         
         // Reset our state.  We want to do this even if restarting, because
         // the underlying state of the text editor could have changed in any way.
+        
+        
+        System.out.println("check"+"starting first time on StartInputView  ") ;
+        
+        
         mComposing.setLength(0);
         updateCandidates();
         
@@ -251,6 +368,10 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
         // its window.
         setCandidatesViewShown(false);
         
+        System.out.println("check"+"starting first time on onFinishInput ") ;
+        
+        
+        
         mCurKeyboard = mQwertyKeyboard;
         if (mInputView != null) {
             mInputView.closing();
@@ -262,6 +383,9 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
         // Apply the selected keyboard to the input view.
         mInputView.setKeyboard(mCurKeyboard);
         mInputView.closing();
+        
+        System.out.println("check"+"starting first time on onStartInputView ") ;
+        
         final InputMethodSubtype subtype = mInputMethodManager.getCurrentInputMethodSubtype();
         mInputView.setSubtypeOnSpaceKey(subtype);
     }
@@ -548,17 +672,8 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
         } else if (primaryCode == LatinKeyboardView.KEYCODE_OPTIONS) {
             // Show a menu or somethin'
         } else if (primaryCode == Keyboard.KEYCODE_MODE_CHANGE
-                && mInputView != null) {
-            Keyboard current = mInputView.getKeyboard();
-            if (current == mSymbolsKeyboard || current == mSymbolsShiftedKeyboard) {
-                current = mQwertyKeyboard;
-            } else {
-                current = mSymbolsKeyboard;
-            }
-            mInputView.setKeyboard(current);
-            if (current == mSymbolsKeyboard) {
-                current.setShifted(false);
-            }
+                && mInputView != null  ) {
+           
         } else {
             handleCharacter(primaryCode, keyCodes);
         }
@@ -725,27 +840,273 @@ public class SoftKeyboard extends InputMethodService  implements KeyboardView.On
     
    //  
     public void onPress(int primaryCode) {
+    
     	
-         System.out.println(primaryCode) ; 
-    	 if (song.isPlaying())
-         {
-    		 song.pause();  
-    		 song.start() ; 
-         }
-    	 else 
-    	 {
-    		 song.start() ; 
-         }
-         
-          
-    	 System.out.println("check"+"count"); 
+    
+    	//mediaPlayer.start() ; 
+    	
+   
+    	time = System.currentTimeMillis() ; 
+    	
+    	
+    	
+  	
+    	//music_play (mediaPlayer) ; 
+    	
+    	if (primaryCode == -2 )
+    	{
+    		check_long = true ; 
+    		system_time = System.currentTimeMillis() ; 
+    	}
+    	
+    	
+    	System.out.println("check_button"+primaryCode+"ypus"+time) ; 
+    	
+    	Thread t = new Thread (this) ; 
+    	t.start() ; 
+    	
+    	
     }
     
+    
+    
     public void onRelease(int primaryCode) {
+    	
+    	
+    	if (primaryCode == -2 && long_time < System.currentTimeMillis() - system_time )
+    	{
+    		// start activity 
+    		Toast.makeText(getApplicationContext(), "YOOO !!!!", Toast.LENGTH_LONG).show() ; 
+    		try {
+    		Intent intent = new Intent (getApplicationContext(), MainActivity.class) ; 
+    		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK) ; 
+    		startActivity (intent) ; 
+    		}
+    		
+    		catch (Exception e )
+    		{
+    			System.out.println("check"+e.toString()) ;  
+    		}
+    	}
+    	
+    	else if (primaryCode == -2 && long_time > System.currentTimeMillis() - system_time)
+    	{
+    		if (primaryCode == Keyboard.KEYCODE_MODE_CHANGE
+                    && mInputView != null  && check_long == true ) {
+                Keyboard current = mInputView.getKeyboard();
+                if (current == mSymbolsKeyboard || current == mSymbolsShiftedKeyboard) {
+                	
+                	System.out.println("check state Changed") ; 
+                	
+                	
+                    current = mQwertyKeyboard;
+                } else {
+                	System.out.println("check state Changed") ; 
+                    current = mSymbolsKeyboard;
+                }
+                mInputView.setKeyboard(current);
+                if (current == mSymbolsKeyboard) {
+                    current.setShifted(false);
+                }
+    		}
+    		
+    		Toast.makeText(getApplicationContext(), "Hii", Toast.LENGTH_LONG).show() ; 
+    		
+    	}
+    	
+    	System.out.println("check_button"+primaryCode+"ypus release"+time) ; 
     }
     
  
-   
     
+    
+   public ArrayList<Integer>  music_setup ()
+   {
+	   
+	   Class raw = R.raw.class;
+   	   Field[] fields = raw.getFields();
+   	   
+       MediaPlayer song = null ; 
+       
+       
+       ArrayList <Integer> list = new ArrayList () ; 
+       
+       
+   	   for (Field field : fields)
+   	   {
+   		   try 
+   		   {
+	   			int id = this.getResources().getIdentifier(field.getName(), "raw", this.getPackageName());
+	   	    	
+   	    	    
+   	    	    list.add(id) ; 
+   	    	
+   	       } 
+   		   catch(Exception e) 
+   		   {
+   			   Log.e("REFLECTION", String.format("%s thIllegalAccessException.",
+   	           field.getName()));
+   	       }
+   	   }
+   	   
+   	   return list ; 
+   }
+    
+   
+   
+   
+   public void  music_play (MediaPlayer song )
+   {
+	   
+	   long initial = System.currentTimeMillis() ; 
+   	   
+	   mediaPlayer.start() ; 
+   	   while (true)
+   	   {
+	   		//System.out.println("check"+System.currentTimeMillis() ) ;
+	   		if ((initial + 300 ) < System.currentTimeMillis() )
+	   	    {
+	   			mediaPlayer.pause() ;
+	   		
+	  
+	   			break ; 
+	   	    }
+   	   }
+   }
+   
+   
+   private int current_index = 0 ; 
+   
+   private void play(ArrayList <File> songs  )
+   {
+	   
+	   try {
+	   
+	   if (current_index < songs.size()-1)
+          current_index += 1 ;
+	   
+	   
+	   else 
+		   current_index = 0 ; 
+	   }
+	   catch (Exception e )
+	   {
+		   System.out.println("count\t"+e) ; 
+ 	   }
+	   
+	   
+	   System.out.println("single"+current_index+songs.size()) ; 
+	   
+	   
+        
+       
+       try
+       {   
+    	   start = false ; 
+           mediaPlayer.reset();
+           mediaPlayer.setDataSource(SoftKeyboard.this, Uri.parse(list_local.get(current_index).getAbsolutePath()));
+           mediaPlayer.setOnPreparedListener(this);
+           mediaPlayer.prepareAsync();
+
+           
+          
+           
+           
+           
+        /*   
+    	   
+    	   mediaPlayer.release() ; 
+    	   mediaPlayer = MediaPlayer.create(this, songs.get(current_index)) ; 
+    	   listen(mediaPlayer) ; 
+     */ 
+       }
+       
+       catch (Exception e)
+       {
+           System.out.println(e) ; 
+       }
+       
+   }
+    
+   
+   
+   void listen (MediaPlayer song) 
+   {
+	   song.setLooping(false)  ; 
+	   song.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+			
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				// TODO Auto-generated method stub
+				
+				System.out.println("check"+ "complete") ; 
+				
+				play (list_local) ; 
+				
+			}
+		}) ; 
+	   
+	   
+	   
+	   song.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+		
+		@Override
+		public boolean onError(MediaPlayer mp, int what, int extra) {
+			// TODO Auto-generated method stub
+			
+			
+		
+			if (MediaPlayer.MEDIA_ERROR_UNKNOWN == what )
+			{
+				System.out.println("error_check"+"unknown") ; 
+			}
+			if (MediaPlayer.MEDIA_ERROR_SERVER_DIED == what )
+			{
+				System.out.println("error_check"+"died"); 
+			}
+				
+			
+		    
+			System.out.format("on_error"+"mediaplayer error - what: %d, extra: %d", what, extra) ; 
+			return true;
+		}
+	});
+   }
+
+@Override
+public void run() 
+{
+	// TODO Auto-generated method stub
+	 long initial = System.currentTimeMillis() ; 
+ 	   
+	   
+ 	   while (true)
+ 	   {
+ 		    if (start == true)
+ 		    mediaPlayer.start() ;
+	   		//System.out.println("check"+System.currentTimeMillis() ) ;
+	   		if ((initial + 300 ) < System.currentTimeMillis() )
+	   	    {
+	   			
+	   			mediaPlayer.pause() ;
+	   		
+	  
+	   			break ; 
+	   	    }
+ 	   }
+	
+	
+	
+}
+
+@Override
+public void onPrepared(MediaPlayer arg0) {
+	// TODO Auto-generated method stub
+	start = true ; 
+	
+	
+}
+
+     
     
 }

@@ -17,6 +17,13 @@ public final class R {
         public static final int candidate_recommended=0x7f060001;
     }
     public static final class dimen {
+        /** 
+         Customize dimensions originally defined in res/values/dimens.xml (such as
+         screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
+    
+         */
+        public static final int activity_horizontal_margin=0x7f070003;
+        public static final int activity_vertical_margin=0x7f070004;
         public static final int candidate_font_height=0x7f070001;
         public static final int candidate_vertical_padding=0x7f070002;
         public static final int key_height=0x7f070000;
@@ -32,17 +39,71 @@ public final class R {
         public static final int sym_keyboard_space=0x7f020007;
     }
     public static final class id {
-        public static final int keyboard=0x7f090000;
+        public static final int action_settings=0x7f0a0008;
+        public static final int button1=0x7f0a0007;
+        public static final int button2=0x7f0a0001;
+        public static final int button3=0x7f0a0002;
+        public static final int button4=0x7f0a0003;
+        public static final int button5=0x7f0a0004;
+        public static final int keyboard=0x7f0a0000;
+        public static final int listView1=0x7f0a0006;
+        public static final int parag=0x7f0a0005;
     }
     public static final class layout {
         public static final int input=0x7f030000;
+        public static final int options=0x7f030001;
+        public static final int songs=0x7f030002;
+    }
+    public static final class menu {
+        public static final int main=0x7f090000;
     }
     public static final class raw {
-        public static final int o=0x7f050000;
+        public static final int a_1=0x7f050000;
+        public static final int a_10=0x7f050001;
+        public static final int a_11=0x7f050002;
+        public static final int a_12=0x7f050003;
+        public static final int a_13=0x7f050004;
+        public static final int a_14=0x7f050005;
+        public static final int a_15=0x7f050006;
+        public static final int a_16=0x7f050007;
+        public static final int a_17=0x7f050008;
+        public static final int a_18=0x7f050009;
+        public static final int a_19=0x7f05000a;
+        public static final int a_2=0x7f05000b;
+        public static final int a_20=0x7f05000c;
+        public static final int a_21=0x7f05000d;
+        public static final int a_22=0x7f05000e;
+        public static final int a_23=0x7f05000f;
+        public static final int a_24=0x7f050010;
+        public static final int a_25=0x7f050011;
+        public static final int a_26=0x7f050012;
+        public static final int a_27=0x7f050013;
+        public static final int a_28=0x7f050014;
+        public static final int a_29=0x7f050015;
+        public static final int a_3=0x7f050016;
+        public static final int a_30=0x7f050017;
+        public static final int a_31=0x7f050018;
+        public static final int a_32=0x7f050019;
+        public static final int a_33=0x7f05001a;
+        public static final int a_34=0x7f05001b;
+        public static final int a_35=0x7f05001c;
+        public static final int a_36=0x7f05001d;
+        public static final int a_37=0x7f05001e;
+        public static final int a_38=0x7f05001f;
+        public static final int a_39=0x7f050020;
+        public static final int a_4=0x7f050021;
+        public static final int a_40=0x7f050022;
+        public static final int a_5=0x7f050023;
+        public static final int a_6=0x7f050024;
+        public static final int a_7=0x7f050025;
+        public static final int a_8=0x7f050026;
+        public static final int a_9=0x7f050027;
     }
     public static final class string {
+        public static final int action_settings=0x7f08000c;
         public static final int general_category=0x7f08000a;
-        /**  Title for Latin keyboard  
+        public static final int hello_world=0x7f08000d;
+        /**  Title for Latin keyboard 
          */
         public static final int ime_name=0x7f080000;
         /**  Labels on soft keys 
@@ -59,6 +120,7 @@ public final class R {
         /**  Titles for ImePreference 
          */
         public static final int settings_name=0x7f080007;
+        public static final int title_activity_main=0x7f08000b;
         /**  Symbols that are commonly considered word separators in this language 
          */
         public static final int word_separators=0x7f080001;
